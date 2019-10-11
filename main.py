@@ -42,7 +42,7 @@ def canWeGoHere(x, y):
     if [x, y] in people:
         return False
     for o in obstacles:
-        if o[0] <= x <= o[2] or o[1] <= y <= o[3]:
+        if o[0] <= x <= o[2] and o[1] <= y <= o[3]:
             return False
     return True
 
