@@ -31,14 +31,16 @@ def initialization():
     x = random.randint(0, field[0] - 1)
     y = random.randint(0, field[1] - 1)
     for i in range(0, pow(2, powPeople)):
-        while not canWeGoHere(x, y):
+        while not canGoHere(x, y):
             x = random.randint(0, field[0] - 1)
             y = random.randint(0, field[1] - 1)
         people.append([x, y])
 
 
-def canWeGoHere(x, y):
+def canGoHere(x, y):
     global obstacles, people
+    if x < 0 or y < 0:
+        return False
     if [x, y] in people:
         return False
     for o in obstacles:
@@ -47,8 +49,22 @@ def canWeGoHere(x, y):
     return True
 
 
-def algorithm():
-    global scenario
+def algorithm0():
+    global people, exits, field
+
+    while len(people) != 0:
+        # Sort people by the distance as the crow flies from the exit
+        people = sorted(people, key=lambda x: (pow(x[0], 2) + pow(x[1], 2)))
+
+        for p in people:
+            if p[0] == 0 and p[1] == 0:  # in front of the exit
+                people.pop(0)
+            if canGoHere(p[0] - 1, p[1] - 1):  # can do a diagonal movement
+                p[0], p[1] = p[0] - 1, p[1] - 1
+            elif canGoHere(p[0] - 1, p[1]):  # can do an horizontal movement
+                p[0], p[1] = p[0] - 1, p[1]
+            elif canGoHere(p[0], p[1] - 1):  # can do a vertical movement
+                p[0], p[1] = p[0], p[1] - 1
 
 
 def main():
@@ -63,7 +79,8 @@ def main():
         timeval = []
         for i in range(0, 5):
             start_time = time.time()
-            algorithm()
+            if scenario == 0:
+                algorithm0()
             end_time = time.time()
             timeval.append(end_time - start_time)
 
