@@ -1,8 +1,9 @@
+import random
 import sys
 import time
 from statistics import mean
 
-field = [512, 512]  # Field size
+field = [512, 128]  # Field size
 exits = [[0, 0], [0, 1], [1, 0]]  # Cells where people can get out
 obstacles = [[50, 50, 60, 60],
              [100, 100, 110, 105]]  # Coordinates of obstacles [xmin, ymin, xmax, ymax]
@@ -18,7 +19,7 @@ def getargs():
     for i in range(0, len(sys.argv)):
         arg = sys.argv[i]
         if arg == "-p":
-            powPeople = sys.argv[i + 1]
+            powPeople = int(sys.argv[i + 1])
         if arg == "-m":
             measure = True
         if arg == "-t":
@@ -26,7 +27,24 @@ def getargs():
 
 
 def initialization():
-    global people, powPeople
+    global people, powPeople, field
+    x = random.randint(0, field[0] - 1)
+    y = random.randint(0, field[1] - 1)
+    for i in range(0, pow(2, powPeople)):
+        while not canWeGoHere(x, y):
+            x = random.randint(0, field[0] - 1)
+            y = random.randint(0, field[1] - 1)
+        people.append([x, y])
+
+
+def canWeGoHere(x, y):
+    global obstacles, people
+    if [x, y] in people:
+        return False
+    for o in obstacles:
+        if o[0] <= x <= o[2] or o[1] <= y <= o[3]:
+            return False
+    return True
 
 
 def algorithm():
@@ -36,21 +54,23 @@ def algorithm():
 def main():
     # Get command line arguments
     getargs()
+
+    # Initialize field
     initialization()
 
     if measure:
         i = 0
-        timevalues = []
+        timeval = []
         for i in range(0, 5):
             start_time = time.time()
             algorithm()
             end_time = time.time()
-            timevalues.append(end_time - start_time)
+            timeval.append(end_time - start_time)
 
-        timevalues.sort()
-        timevalues.pop(0)
-        timevalues.pop()
-        print("Execution time: %ss" % (mean(timevalues)))
+        timeval.sort()
+        timeval.pop(0)
+        timeval.pop()
+        print("Execution time: %ss" % (mean(timeval)))
 
     exit(0)
 
