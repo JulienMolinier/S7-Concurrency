@@ -71,13 +71,14 @@ def main():
     # Get command line arguments
     getargs()
 
-    # Initialize field
-    initialization()
-
     if measure:
         i = 0
         timeval = []
         for i in range(0, 5):
+
+            # Initialize field
+            initialization()
+
             start_time = time.time()
             if scenario == 0:
                 algorithm0()
