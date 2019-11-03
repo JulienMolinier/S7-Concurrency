@@ -111,7 +111,6 @@ def draw(window):
     global modifiedCell
     cell_size = 3
     window.fill((0, 0, 0))
-    start_time = time.time()
     color = (0, 0, 0)
     for changedCells in modifiedCell:
         if grid[changedCells[0]][changedCells[1]] == 1:
@@ -131,8 +130,6 @@ def draw(window):
     #         elif grid[x][y] == 2:
     #             color = (255, 0, 0)
     #         pygame.draw.rect(window, color, (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE), 0)
-    end_time = time.time()
-    print("Execution time: %ss" % (end_time - start_time))
     pygame.display.update()
 
 
