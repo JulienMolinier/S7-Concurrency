@@ -115,21 +115,29 @@ def main():
     if measure:
         i = 0
         timeval = []
+        timeCPUval = []
         for i in range(0, 5):
 
             # Initialize field
             initialization()
 
             start_time = time.time()
+            start_timeCPU = time.process_time()
             if scenario == 0:
                 algorithm0()
             end_time = time.time()
+            end_timeCPU = time.process_time()
             timeval.append(end_time - start_time)
+            timeCPUval.append(end_timeCPU - start_timeCPU)
 
         timeval.sort()
+        timeCPUval.sort()
         timeval.pop(0)
+        timeCPUval.pop(0)
         timeval.pop()
+        timeCPUval.pop()
         print("Execution time: %ss" % (mean(timeval)))
+        print("CPU time: %ss" % (mean(timeCPUval)))
 
     exit(0)
 
