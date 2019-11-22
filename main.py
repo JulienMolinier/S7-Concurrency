@@ -54,18 +54,25 @@ def canGoHere(x, y):
     if [x, y] in people:
         return False
     for o in obstacles:
-        if o[0] <= x <= o[2] and o[1] <= y <= o[3]:
+        if o[0] <= x < o[2] and o[1] <= y < o[3]:
             return False
     return True
+
+
+def isOnExit(x, y):
+    global exits
+    for e in exits:
+        if e[0] == x and e[1] == y:
+            return True
+    return False
 
 
 def doOneStep():
     global people, exits, field
     # Sort people by the distance as the crow flies from the exit
     people = sorted(people, key=lambda x: (pow(x[0], 2) + pow(x[1], 2)))
-
     for p in people:
-        if p[0] == 0 and p[1] == 0:  # in front of the exit
+        if isOnExit(p[0], p[1]):  # in front of the exit
             people.pop(0)
         if canGoHere(p[0] - 1, p[1] - 1):  # can do a diagonal movement
             p[0], p[1] = p[0] - 1, p[1] - 1
