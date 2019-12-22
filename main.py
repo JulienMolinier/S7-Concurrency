@@ -84,6 +84,21 @@ def doOneStep():
         elif canGoHere(p[0], p[1] - 1):  # can do a vertical movement
             p[0], p[1] = p[0], p[1] - 1
 
+def GoToExit(p, lock):
+    global people, exits, field
+    while(not isOnExit(p[0],p[1])):
+        lock.acquire()
+        if canGoHere(p[0] - 1, p[1] - 1):  # can do a diagonal movement
+            p[0], p[1] = p[0] - 1, p[1] - 1
+        elif canGoHere(p[0] - 1, p[1]):  # can do an horizontal movement
+            p[0], p[1] = p[0] - 1, p[1]
+        elif canGoHere(p[0], p[1] - 1):  # can do a vertical movement
+            p[0], p[1] = p[0], p[1] - 1
+        lock.release()
+    lock.acquire()
+    people.remove(p)
+    lock.release()
+
 
 def algorithm0():
     global people
@@ -96,7 +111,15 @@ def algorithm0():
 
 
 def algorithm1():
-    pass
+    global people
+    listLock = Lock()
+    threadsList = []
+    for p in people:
+        threadsList.append(Thread(target=GoToExit, args=(p,listLock)))
+    for t in threadsList:
+        t.start()
+    for thread in threadsList:
+        thread.join()
 
 
 def subAlgorithm2(number):
