@@ -3,12 +3,14 @@ import random
 import sys
 import time
 from statistics import mean
+from threading import Lock
+from threading import Thread
 
 import pygame
 
 field = [512, 128]  # Field size
 exits = [[0, 0], [0, 1], [1, 0]]  # Cells where people can get out
-obstacles = [[50, 50, 60, 60],
+obstacles = [[50, 50, 60, 60], [20, 20, 45, 45], [80, 20, 95, 126], [200, 5, 300, 50],
              [100, 100, 110, 105]]  # Coordinates of obstacles [xmin, ymin, xmax, ymax]
 people = []  # Coordinates of people
 powPeople = 0  # 2^powPeople is the number of people on the field
@@ -18,6 +20,9 @@ scenario = 0  # Scenario chosen
 
 space_on_left = 50
 space_above = 200
+
+list1, list2, list3, list4 = [], [], [], []
+oneThree, oneFour, oneTwo, threeFour, twoFour = Lock(), Lock(), Lock(), Lock(), Lock()
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (space_on_left, space_above)
 
@@ -33,7 +38,7 @@ def getargs():
         if arg == "-v":
             display = True
         if arg == "-t":
-            scenario = sys.argv[i + 1]
+            scenario = int(sys.argv[i + 1])
 
 
 def initialization():
@@ -69,8 +74,6 @@ def isOnExit(x, y):
 
 def doOneStep():
     global people, exits, field
-    # Sort people by the distance as the crow flies from the exit
-    people = sorted(people, key=lambda x: (pow(x[0], 2) + pow(x[1], 2)))
     for p in people:
         if isOnExit(p[0], p[1]):  # in front of the exit
             people.pop(0)
@@ -83,9 +86,44 @@ def doOneStep():
 
 
 def algorithm0():
-    global people, exits, field
+    global people
+
+    # Sort people by the distance as the crow flies from the exit
+    people = sorted(people, key=lambda x: (pow(x[0], 2) + pow(x[1], 2)))
+
     while len(people) != 0:
         doOneStep()
+
+
+def algorithm1():
+    pass
+
+
+def subAlgorithm2(args):
+    global people, list1, list2, list3, list4, oneTwo, oneThree, oneFour, twoFour, threeFour, exits, field
+
+    # Sort people by the distance as the crow flies from the exit
+    args = sorted(args, key=lambda x: (pow(x[0], 2) + pow(x[1], 2)))
+
+
+def algorithm2():
+    global people, list1, list2, list3, list4
+
+    for p in people:
+        if p[0] < 256:
+            if p[1] < 64:
+                list1.append(p)
+            else:
+                list3.append(p)
+        elif p[1] < 64:
+            list2.append(p)
+        else:
+            list4.append(p)
+
+    t1 = Thread(target=subAlgorithm2, args=list1)
+    t2 = Thread(target=subAlgorithm2, args=list2)
+    t3 = Thread(target=subAlgorithm2, args=list3)
+    t3 = Thread(target=subAlgorithm2, args=list4)
 
 
 def draw(window):
@@ -132,6 +170,10 @@ def main():
             start_timeCPU = time.process_time()
             if scenario == 0:
                 algorithm0()
+            if scenario == 1:
+                algorithm1()
+            if scenario == 2:
+                algorithm2()
             end_time = time.time()
             end_timeCPU = time.process_time()
             timeval.append(end_time - start_time)
