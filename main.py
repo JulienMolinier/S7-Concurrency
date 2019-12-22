@@ -22,7 +22,7 @@ space_on_left = 50
 space_above = 200
 
 list1, list2, list3, list4 = [], [], [], []
-oneThree, oneFour, oneTwo, threeFour, twoFour = Lock(), Lock(), Lock(), Lock(), Lock()
+one, two, three, four = Lock(), Lock(), Lock(), Lock()
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (space_on_left, space_above)
 
@@ -99,11 +99,11 @@ def algorithm1():
     pass
 
 
-def subAlgorithm2(args):
-    global people, list1, list2, list3, list4, oneTwo, oneThree, oneFour, twoFour, threeFour, exits, field
+def subAlgorithm2(number):
+    global people, list1, list2, list3, list4, one, two, three, four, exits, field
 
-    # Sort people by the distance as the crow flies from the exit
-    args = sorted(args, key=lambda x: (pow(x[0], 2) + pow(x[1], 2)))
+    # # Sort people by the distance as the crow flies from the exit
+    # args = sorted(args, key=lambda x: (pow(x[0], 2) + pow(x[1], 2)))
 
 
 def algorithm2():
@@ -120,10 +120,20 @@ def algorithm2():
         else:
             list4.append(p)
 
-    t1 = Thread(target=subAlgorithm2, args=list1)
-    t2 = Thread(target=subAlgorithm2, args=list2)
-    t3 = Thread(target=subAlgorithm2, args=list3)
-    t3 = Thread(target=subAlgorithm2, args=list4)
+    t1 = Thread(target=subAlgorithm2, args=[1])
+    t2 = Thread(target=subAlgorithm2, args=[2])
+    t3 = Thread(target=subAlgorithm2, args=[3])
+    t4 = Thread(target=subAlgorithm2, args=[4])
+
+    t1.start()
+    t2.start()
+    t3.start()
+    t4.start()
+
+    t1.join()
+    t2.join()
+    t3.join()
+    t4.join()
 
 
 def draw(window):
