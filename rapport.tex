@@ -1,0 +1,53 @@
+\documentclass[12pt,oneside,a4paper]{article}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=false,
+    linktoc=all,
+}
+
+\pagestyle{fancy}
+\cfoot{\thepage}
+\fancyhead{}
+\fancyhead[R]{\leftmark}
+\renewcommand*\contentsname{Sommaire}
+
+\begin{document}
+\title{%
+  Rapport \\Gestion de la Concurrence}
+
+\author{LERAS - MOLINIER}
+\date{21 décembre 2019}
+\maketitle
+\newpage
+
+\tableofcontents
+\newpage
+
+\section{Diagramme de cas d'utilisation}
+\paragraph{}
+
+\newpage
+\section{Diagramme de classes}
+\paragraph{}
+
+\newpage
+
+\section{Avancée Fonctionnelle et Tests cucumber }
+
+\subsection{Boutique}
+\paragraph{}
+Le système permet à un manager de changer les horaires d'ouverture de son magasin dans la 
+limite ou ce changement n'affecte pas des commandes en attente de récupération
+(\textit{ChangeOpenHour.feature}). Coté client celui-ci n'a pas la possibilité de sélectionner un horaire
+pour récupérer sa commande hors des horaires d'ouverture du magasin qu'il a choisi. Il peut demander à récupérer
+une commande grâce au numéro de commande dans la mesure où il se présente à l'heure qu'il a spécifié ou après
+(\textit{PickUpOrder.feature} et \textit{PassOrder.feature}). Le système permet également 
+la proposition d'une nouvelle recette chaque mois qui est mise en avant en tant que recette 
+du mois (\textit{Cookies.feature}).
+
+\end{document}
