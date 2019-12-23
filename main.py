@@ -321,19 +321,44 @@ def subAlgorithm2(number):
     if number == 4:
         while len(people4) != 0:
             doTheJob2(number)
-        isFinished4 = True
+        acquireLockFromFieldNumber(4)
+        if len(people4) == 0:
+            releaseLockFromFieldNumber(4)
+            isFinished4 = True
+        else:
+            releaseLockFromFieldNumber(4)
+            subAlgorithm2(number)
+        
     elif number == 3:
         while len(people3) != 0 or not isFinished4:
             doTheJob2(number)
-        isFinished3 = True
+        acquireLockFromFieldNumber(3)
+        if len(people3) == 0:
+            releaseLockFromFieldNumber(3)
+            isFinished3 = True
+        else:
+            releaseLockFromFieldNumber(3)
+            subAlgorithm2(number)
     elif number == 2:
         while len(people2) != 0 or not isFinished4:
             doTheJob2(number)
-        isFinished2 = True
+        acquireLockFromFieldNumber(2)
+        if len(people2) == 0:
+            releaseLockFromFieldNumber(2)
+            isFinished2 = True
+        else:
+            releaseLockFromFieldNumber(2)
+            subAlgorithm2(number)
     else:
         while len(people1) != 0 or not isFinished2 or not isFinished3 or not isFinished4:
             doTheJob2(number)
-        isFinished1 = True
+        acquireLockFromFieldNumber(1)
+        if len(people1) == 0:
+            releaseLockFromFieldNumber(1)
+            isFinished1 = True
+        else:
+            releaseLockFromFieldNumber(1)
+            subAlgorithm2(number)
     #print(str(number) + "->" + str(people1) + " " + str(people2) + " " + str(people3) + " " + str(people4))
     #print(str(number) + " Finished " + str(isFinished1) + " " + str(isFinished2) + " " + str(isFinished3) + " " + str(isFinished4))
 
