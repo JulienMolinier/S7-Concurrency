@@ -105,3 +105,11 @@ venv.bak/
 
 .idea/*
 *.iml
+
+*.out
+*.toc
+*.fls
+*.synctex.gz
+*.aux
+*.fdb_latexmk
+*.log
