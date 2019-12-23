@@ -23,6 +23,7 @@ space_above = 200
 
 people1, people2, people3, people4 = [], [], [], []
 one, two, three, four = Lock(), Lock(), Lock(), Lock()
+isFinished1, isFinished2, isFinished3, isFinished4 = False, False, False, False
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (space_on_left, space_above)
 
@@ -53,7 +54,9 @@ def initialization():
 
 
 def init4Fields():
-    global people1, people2, people3, people4, powPeople, field, people
+    global people1, people2, people3, people4, powPeople, field, people, isFinished1, isFinished2, isFinished3, isFinished4
+    isFinished1, isFinished2, isFinished3, isFinished4 = False, False, False, False
+    people1, people2, people3, people4 = [], [], [], []
     x = random.randint(0, field[0] - 1)
     y = random.randint(0, field[1] - 1)
     for i in range(0, pow(2, powPeople)):
@@ -141,6 +144,7 @@ def GoToExit(p, lock):
         lock.release()
     lock.acquire()
     people.remove(p)
+    print(len(people))
     lock.release()
 
 
@@ -198,31 +202,31 @@ def getFieldFromPosAndDirection(direction, p):
 def acquireLockFromFieldNumber(x):
     if x == 1:
         one.acquire()
-        #print("one is locked")
+        # print("one is locked")
     elif x == 2:
         two.acquire()
-        #print("two is locked")
+        # print("two is locked")
     elif x == 3:
         three.acquire()
-        #print("three is locked")
+        # print("three is locked")
     elif x == 4:
         four.acquire()
-        #print("four is locked")
+        # print("four is locked")
 
 
 def releaseLockFromFieldNumber(x):
     if x == 1:
         one.release()
-        #print("one is unlocked")
+        # print("one is unlocked")
     elif x == 2:
         two.release()
-        #print("two is unlocked")
+        # print("two is unlocked")
     elif x == 3:
         three.release()
-        #print("three is unlocked")
+        # print("three is unlocked")
     elif x == 4:
         four.release()
-        #print("four is unlocked")
+        # print("four is unlocked")
 
 
 def getListFromFieldNumber(x):
@@ -237,79 +241,101 @@ def getListFromFieldNumber(x):
         return people4
 
 
-def subAlgorithm2(number):
-    global people, people1, people2, people3, people4, one, two, three, four, exits, field
+def doTheJob2(number):
+    #print(str(number) + "->" + str(people1) + " " + str(people2) + " " + str(people3) + " " + str(people4))
+    if number == 1:
+        if len(people1) != 0:
 
-    # # Sort people by the distance as the crow flies from the exit
-    while len(people1) != 0 or len(people2) != 0 or len(people3) != 0 or len(people4) != 0:
-        print(str(number) +"->" + str(people1) + " " + str(people2) + " " + str(people3) + " " + str(people4))
-        if number == 1:
-            if len(people1) != 0:
+            # print("one is locked")
+            for p in people1:
                 one.acquire()
-                #print("one is locked")
-                for p in people1:
-                    if isOnExit(p[0], p[1]):  # in front of the exit
-                        people1.remove(p)
-                        #print(str(number) +"->" + str(people1) + " " + str(people2) + " " + str(people3) + " " + str(people4))
-                    if canGoHereField(p[0] - 1, p[1] - 1, 1):  # can do a diagonal movement
-                        #print(str(p) + "moving to [" + str(p[0]-1) + "," + str(p[1] - 1) + "]")
-                        p[0], p[1] = p[0] - 1, p[1] - 1
-                    elif canGoHereField(p[0] - 1, p[1], 1):  # can do an horizontal movement
-                        #print(str(p) + "moving to [" + str(p[0]-1) + "," + str(p[1]) + "]")
-                        p[0], p[1] = p[0] - 1, p[1]
-                    elif canGoHereField(p[0], p[1] - 1, 1):  # can do a vertical movement
-                        #print(str(p) + "moving to [" + str(p[0]) + "," + str(p[1] - 1) + "]")
-                        p[0], p[1] = p[0], p[1] - 1
+                if isOnExit(p[0], p[1]):  # in front of the exit
+                    people1.remove(p)
+                    # print(str(number) +"->" + str(people1) + " " + str(people2) + " " + str(people3) + " " + str(people4))
+                if canGoHereField(p[0] - 1, p[1] - 1, 1):  # can do a diagonal movement
+                    # print(str(p) + "moving to [" + str(p[0]-1) + "," + str(p[1] - 1) + "]")
+                    p[0], p[1] = p[0] - 1, p[1] - 1
+                elif canGoHereField(p[0] - 1, p[1], 1):  # can do an horizontal movement
+                    # print(str(p) + "moving to [" + str(p[0]-1) + "," + str(p[1]) + "]")
+                    p[0], p[1] = p[0] - 1, p[1]
+                elif canGoHereField(p[0], p[1] - 1, 1):  # can do a vertical movement
+                    # print(str(p) + "moving to [" + str(p[0]) + "," + str(p[1] - 1) + "]")
+                    p[0], p[1] = p[0], p[1] - 1
                 one.release()
-                #print("one is unlocked")
-        else:
-            if len(getListFromFieldNumber(number)) != 0:
+            # print("one is unlocked")
+    else:
+        if len(getListFromFieldNumber(number)) != 0:
+
+            for p in getListFromFieldNumber(number):
                 acquireLockFromFieldNumber(number)
-                for p in getListFromFieldNumber(number):
-                    diagonalField = getFieldFromPosAndDirection("diagonal", p)
-                    horizontalField = getFieldFromPosAndDirection("horizontal", p)
-                    verticalField = getFieldFromPosAndDirection("vertical", p)
-                    if canGoHereField(p[0] - 1, p[1] - 1, diagonalField):  # can do a diagonal movement
-                        if diagonalField == number:
-                            #print(str(p) + "moving to [" + str(p[0]-1) + "," + str(p[1] - 1) + "]")
-                            p[0], p[1] = p[0] - 1, p[1] - 1
-                        else:  # p is changing field
-                            acquireLockFromFieldNumber(diagonalField)
-                            if canGoHereField(p[0] - 1, p[1] - 1,diagonalField):  # rechecking in case of something changed
-                                #print(str(p) + "moving to [" + str(p[0]-1) + "," + str(p[1] - 1) + "] new field " + str(diagonalField))
-                                getListFromFieldNumber(number).remove(p)  # removing the person from the field
-                                getListFromFieldNumber(diagonalField).append(
-                                    [p[0] - 1, p[1] - 1])  # adding the person to the new field
-                            releaseLockFromFieldNumber(diagonalField)
+                diagonalField = getFieldFromPosAndDirection("diagonal", p)
+                horizontalField = getFieldFromPosAndDirection("horizontal", p)
+                verticalField = getFieldFromPosAndDirection("vertical", p)
+                if canGoHereField(p[0] - 1, p[1] - 1, diagonalField):  # can do a diagonal movement
+                    if diagonalField == number:
+                        # print(str(p) + "moving to [" + str(p[0]-1) + "," + str(p[1] - 1) + "]")
+                        p[0], p[1] = p[0] - 1, p[1] - 1
+                    else:  # p is changing field
+                        acquireLockFromFieldNumber(diagonalField)
+                        if canGoHereField(p[0] - 1, p[1] - 1, diagonalField):  # rechecking in case of something changed
+                            # print(str(p) + "moving to [" + str(p[0]-1) + "," + str(p[1] - 1) + "] new field " + str(diagonalField))
+                            getListFromFieldNumber(diagonalField).append(
+                                [p[0] - 1, p[1] - 1])  # adding the person to the new field
+                            getListFromFieldNumber(number).remove(p)  # removing the person from the field
+                        releaseLockFromFieldNumber(diagonalField)
 
-                    elif canGoHereField(p[0] - 1, p[1], horizontalField):  # can do an horizontal movement
-                        if horizontalField == number:
-                            #print(str(p) + "moving to [" + str(p[0]-1) + "," + str(p[1]) + "]")
-                            p[0], p[1] = p[0] - 1, p[1]
-                        else:
-                            acquireLockFromFieldNumber(horizontalField)
-                            if canGoHereField(p[0] - 1, p[1],
-                                              horizontalField):  # rechecking in case of something changed
-                                #print(str(p) + "moving to [" + str(p[0]-1) + "," + str(p[1]) + "] new field " + str(horizontalField))
-                                getListFromFieldNumber(number).remove(p)  # removing the person from the field
-                                getListFromFieldNumber(horizontalField).append(
-                                    [p[0] - 1, p[1]])  # adding the person to the new field
-                            releaseLockFromFieldNumber(horizontalField)
+                elif canGoHereField(p[0] - 1, p[1], horizontalField):  # can do an horizontal movement
+                    if horizontalField == number:
+                        # print(str(p) + "moving to [" + str(p[0]-1) + "," + str(p[1]) + "]")
+                        p[0], p[1] = p[0] - 1, p[1]
+                    else:
+                        acquireLockFromFieldNumber(horizontalField)
+                        if canGoHereField(p[0] - 1, p[1],
+                                          horizontalField):  # rechecking in case of something changed
+                            # print(str(p) + "moving to [" + str(p[0]-1) + "," + str(p[1]) + "] new field " + str(horizontalField))
 
-                    elif canGoHereField(p[0], p[1] - 1, verticalField):  # can do a vertical movement
-                        if verticalField == number:
-                            #print(str(p) + "moving to [" + str(p[0]) + "," + str(p[1] - 1) + "]")
-                            p[0], p[1] = p[0], p[1] - 1
-                        else:
-                            acquireLockFromFieldNumber(verticalField)
-                            if canGoHereField(p[0], p[1] - 1, verticalField):  # rechecking in case of something changed
-                                #print(str(p) + "moving to [" + str(p[0]) + "," + str(p[1] - 1) + "] new field " + str(verticalField))
-                                getListFromFieldNumber(number).remove(p)  # removing the person from the field
-                                getListFromFieldNumber(verticalField).append(
-                                    [p[0], p[1] - 1])  # adding the person to the new field
-                            releaseLockFromFieldNumber(verticalField)
+                            getListFromFieldNumber(horizontalField).append(
+                                [p[0] - 1, p[1]])  # adding the person to the new field
+                            getListFromFieldNumber(number).remove(p)  # removing the person from the field
+                        releaseLockFromFieldNumber(horizontalField)
+
+                elif canGoHereField(p[0], p[1] - 1, verticalField):  # can do a vertical movement
+                    if verticalField == number:
+                        # print(str(p) + "moving to [" + str(p[0]) + "," + str(p[1] - 1) + "]")
+                        p[0], p[1] = p[0], p[1] - 1
+                    else:
+                        acquireLockFromFieldNumber(verticalField)
+                        if canGoHereField(p[0], p[1] - 1, verticalField):  # rechecking in case of something changed
+                            # print(str(p) + "moving to [" + str(p[0]) + "," + str(p[1] - 1) + "] new field " + str(verticalField))
+
+                            getListFromFieldNumber(verticalField).append(
+                                [p[0], p[1] - 1])  # adding the person to the new field
+                            getListFromFieldNumber(number).remove(p)  # removing the person from the field
+                        releaseLockFromFieldNumber(verticalField)
                 releaseLockFromFieldNumber(number)
 
+
+def subAlgorithm2(number):
+    global people, people1, people2, people3, people4, one, two, three, four, exits, field, isFinished1, isFinished2, isFinished3, isFinished4
+    # # Sort people by the distance as the crow flies from the exit
+    if number == 4:
+        while len(people4) != 0:
+            doTheJob2(number)
+        isFinished4 = True
+    elif number == 3:
+        while len(people3) != 0 or not isFinished4:
+            doTheJob2(number)
+        isFinished3 = True
+    elif number == 2:
+        while len(people2) != 0 or not isFinished4:
+            doTheJob2(number)
+        isFinished2 = True
+    else:
+        while len(people1) != 0 or not isFinished2 or not isFinished3 or not isFinished4:
+            doTheJob2(number)
+        isFinished1 = True
+    #print(str(number) + "->" + str(people1) + " " + str(people2) + " " + str(people3) + " " + str(people4))
+    #print(str(number) + " Finished " + str(isFinished1) + " " + str(isFinished2) + " " + str(isFinished3) + " " + str(isFinished4))
 
 def algorithm2():
     t1 = Thread(target=subAlgorithm2, args=(1,))
@@ -326,6 +352,7 @@ def algorithm2():
     t2.join()
     t3.join()
     t4.join()
+    print("Fin hors thread" + str(people1) + " " + str(people2) + " " + str(people3) + " " + str(people4))
 
 
 def draw(window):
