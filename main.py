@@ -432,8 +432,8 @@ def main():
                 algorithm2()
             end_time = time.time()
             end_timeCPU = time.process_time()
-            timeval.append(end_time - start_time)
-            timeCPUval.append(end_timeCPU - start_timeCPU)
+            timeval.append(1000 * (end_time - start_time))
+            timeCPUval.append(1000 * (end_timeCPU - start_timeCPU))
 
         timeval.sort()
         timeCPUval.sort()
@@ -441,8 +441,8 @@ def main():
         timeCPUval.pop(0)
         timeval.pop()
         timeCPUval.pop()
-        print("Execution time: %ss" % (mean(timeval)))
-        print("CPU time: %ss" % (mean(timeCPUval)))
+        print("Execution time: %sms" % (mean(timeval)))
+        print("CPU time: %sms" % (mean(timeCPUval)))
     else:
         if (scenario != 2):
             initialization()
