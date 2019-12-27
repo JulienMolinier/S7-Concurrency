@@ -22,7 +22,6 @@
 \cfoot{\thepage}
 \fancyhead{}
 \fancyhead[R]{\leftmark}
-\renewcommand*\contentsname{Sommaire}
 
 \begin{document}
 \title{%
@@ -31,17 +30,20 @@
 \author{LERAS - MOLINIER}
 \date{21 décembre 2019}
 \maketitle
-\newpage
-
-\tableofcontents
-\newpage
+\paragraph{}
+\paragraph{}
+\section{Introduction}
+\paragraph{}
+Ce rapport rend compte d'un projet visant à étudier les contraintes de la programmation concurrente liées au parallélisme et 
+aux accès concurrents sur les données. Au travers de différents scénarios nous verrons quelles solutions
+peuvent être apportées en Python.
 
 \section{Principe de fonctionnement des algorithmes}
 
 \subsection{Scénario 0 : thread unique}
 \paragraph{}
 
-\begin{algorithm}
+\begin{algorithm}[H]
   \caption{Scénario 0}\label{euclid}
   \begin{algorithmic}[1]
   \Procedure{algorithm0}{}
@@ -69,7 +71,7 @@
 \subsection{Scénario 1 : une thread par personnes}
 \paragraph{}
 
-\begin{algorithm}
+\begin{algorithm}[H]
   \caption{Scénario 1}\label{euclid}
   \begin{algorithmic}[1]
   \Procedure{algorithm1}{}
@@ -89,14 +91,15 @@
 \end{algorithm}
 
 \paragraph{}
-La méthode \textit{GoToExit()} execute la même logique que le pseudo code du scénario 0 en
-cherchant un déplacement possible. La différence est que avant d'effectuer cette recherche il faut faire
-\textit{lock.acquire()} et après avoir bougé faire \textit{lock.release()}.
+La méthode \textit{GoToExit()} exécute la même logique que le pseudo-code du scénario 0 en
+cherchant un déplacement possible. La différence est qu'avant d'effectuer cette recherche il faut faire
+\textit{lock.acquire()} et après avoir bougé faire \textit{lock.release()} afin de protéger
+la liste et d'éviter qu'un autre thread vienne prendre la place trouvée.
 
 \subsection{Scénario 2 : 4 threads}
 \paragraph{}
 
-\begin{algorithm}
+\begin{algorithm}[H]
   \caption{Scénario 2}\label{euclid}
   \begin{algorithmic}[1]
   \Procedure{algorithm2}{}
@@ -115,26 +118,28 @@ cherchant un déplacement possible. La différence est que avant d'effectuer cet
 \end{algorithm}
 
 \paragraph{}
-La méthode \textit{subAlgorithm2()} s'occupe de partager la liste \textit{people} en 4 (une nouvelle liste
-par zone) et selon l'entier reçu de travailler sur l'une des 4 nouvelles listes.
+La méthode \textit{subAlgorithm2()} s'occupe selon l'entier reçu de travailler sur l'une des 4 zones fraichement crées. Tout comme avec le scénario 1
+il faut s'assurer de prendre les verrous avant chaque recherche et de les rendre après chaque déplacement.
+La particularité ici est qu'il faut parfois prendre 2 verrous lorsque la personne change de zone et donc
+change de liste.
 
 \section{Fonctionnement des bibliothèques utilisés}
 
 \subsection{Bibliothèque threading.Thread}
 \paragraph{}
-Cette bibliothèque Python permet l'implémentation du parrallélisme grâce à l'utilisation de thread (multithreading).
+Cette bibliothèque Python permet l'implémentation du parallélisme grâce à l'utilisation de thread (multithreading).
 Le problème est que le GIL (Global Interpreter Lock) réduit fortement l'utilité des threads en Python
-car il ne permet l'execution que d'un seul thread natif à la fois. Cela permet d'augmenter fortement les
-performances des programmes monothread qui sont beaucoup plus répendu.
+car il ne permet l'exécution que d'un seul thread natif à la fois. Cela permet d'augmenter fortement les
+performances des programmes monothread qui sont bien plus répandu.
 \paragraph{}
 Il semble donc que le GIL tue le multithreading Python mais pas tout à fait. Il empêche généralement de profiter
 de plusieurs coeurs sur une seule machine mais permet de profiter de la latence entre les entrées/sorties.
 \paragraph{}
-Les scénarios qui vont suivre permettront peut-être de montrer le "faux" parrallélisme du multithreading Python.
+Les scénarios qui vont suivre permettront peut-être de montrer le "faux" parallélisme du multithreading Python.
 
 \subsection{Librairie threading.Lock}
 \paragraph{}
-La bibliothèque threading de Python fournie un mécanisme de verrouillage
+La bibliothèque threading de Python fournit un mécanisme de verrouillage
 simple qui permet de synchroniser les threads. Ce système
 comprend 2 méthodes. La méthode \textit{acquire()} permet de prendre le vérrou et de 
 forcer les autres threads à attendre que celui-ci soit libéré par la méthode 
@@ -144,7 +149,7 @@ forcer les autres threads à attendre que celui-ci soit libéré par la méthode
 \paragraph{}
 Afin de mesurer les performances des algorithmes, le paramètre -m permet de 
 donner le temps moyen que met la foule à sortir du terrain. On reproduit 5 fois
-l'algorithme et on supprime les 2 valeurs extrèmes pour obtenir un résultat cohérent.
+l'algorithme et on supprime les 2 valeurs extrêmes pour obtenir un résultat cohérent.
 Ainsi ce résultat n'est pas sensible au temps d'échauffement du processeur et
 les performances plus stables.
 
@@ -167,8 +172,8 @@ Voici le tableau des performances du scénario 0 :
 \end{table}
 
 \paragraph{}
-Les résultats ci-dessus montre que le temps d'éxécution de l'algorithme est très similaire au temps d'
-utilisation du CPU. Cela n'est pas surprenant car cet algorithme n'utilise pas de parrallélisme. Les 
+Les résultats ci-dessus montrent que le temps d'exécution de l'algorithme est très similaire au temps d'
+utilisation du CPU. Cela n'est pas surprenant car cet algorithme n'utilise pas de parallélisme. Les 
 calculs ne sont réalisés que par un seul thread du processus main.
 
 \subsection{Scénario 1 : une thread par personnes}
@@ -191,10 +196,10 @@ Voici le tableau des performances du scénario 1 :
 
 \paragraph{}
 Tout d'abord le temps d'utilisation CPU a fortement augmenté avec ce deuxième algorithme. Il dépasse même
-le temps d'éxécution ce qui n'est pas étonnant car celui-ci utilise autant de threads que de personnes il
-y a donc des calculs qui s'effectuent en parrallèle. Par contre afin d'assurer la cohérence lors d'une recherche
-de déplacement possible et le déplacement en lui même la liste est protégée par un verrou. Comme toutes les
-threads tentent d'accéder à la même liste le temps d'attente augmente fortement avec le nombre de personnes.
+le temps d'exécution ce qui n'est pas étonnant car celui-ci utilise autant de threads que de personnes il
+y a donc des calculs qui s'effectuent en parallèle. Par contre afin d'assurer la cohérence lors d'une recherche
+d'un déplacement possible et le déplacement en lui-même la liste est protégée par un verrou. Comme tous les
+threads tentent d'accéder à la même liste le temps d'attente pour prendre le verrou augmente fortement avec le nombre de personnes.
 
 \subsection{Scénario 2 : 4 threads}
 \paragraph{}
@@ -215,14 +220,14 @@ Voici le tableau des performances du scénario 2 :
 \end{table}
 
 \paragraph{}
-Pour ce dernier scénario le temps d'utilisation CPU est légèrement supérieur au temps d'éxécution. De 
-plus le temps d'éxécution reste bien suprérieur à celui du scénario 1. En effet prendre et rendre un verrou
-sont des opérations coûteuses et le décupage en 4 zones ne solutionne pas le problème de bouchon près de la sortie.
+Pour ce dernier scénario le temps d'utilisation CPU est légèrement supérieur au temps d'exécution. De 
+plus le temps d'exécution reste bien supérieur à celui du scénario 1. En effet prendre et rendre un verrou
+sont des opérations coûteuses et le découpage en 4 zones ne solutionne pas le problème de bouchon près de la sortie.
 
 \section{Conclusion}
 \paragraph{}
-Pour conclure, l'utilisation du parrallélisme et du multithreading python n'est pas forcement synonyme
-de meilleures performances. En effet les scénarios précédents montrent clairement que assurer la protection
+Pour conclure, l'utilisation du parallélisme et du multithreading python n'est pas forcément synonyme
+de meilleures performances. Les scénarios précédents montrent clairement qu'assurer la protection
 et la cohérence des données entre les différents calculs sont des opérations coûteuses qui impactent lourdement
 les performances.
 \end{document}
